@@ -173,7 +173,7 @@ EOC
 
     # Anexa crontab.
 
-    (crontab -l 2>/dev/null; echo "$cron cd $TMPDIR && $command | bash &>/dev/null") | crontab -
+    (crontab -l 2>/dev/null; echo "$cron cd ${TMPDIR:-/tmp} && $command | bash &>/dev/null") | crontab -
 
     if [[ $? -ne 0 ]]; then
         printf "2/2 Instalando ae_scan...(\033[0;31mERR\033[m)\n"
