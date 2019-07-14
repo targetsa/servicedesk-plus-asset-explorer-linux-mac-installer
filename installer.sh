@@ -69,7 +69,7 @@ cat <<"EOC"
             .-"""-.
            '       \
           |,.  ,-.  |
-          |()L( ()| |           Manage Engine AssetExplorer Linux
+          |()L( ()| |           ServiceDesk Plus AssetExplorer Linux
           |,'  `".| |
           |.___.',| `           Copyright (c) 2019
          .j `--"' `  `.         TARGET S.A.
@@ -103,7 +103,7 @@ cat <<"EOC"
  .8888888888888888888888888888888888.
 .&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&'
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&'
-&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&'            Manage Engine AssetExplorer macOS
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&'            ServiceDesk Plus AssetExplorer macOS
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@:
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@:             Copyright (c) 2019
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@:             TARGET S.A.
