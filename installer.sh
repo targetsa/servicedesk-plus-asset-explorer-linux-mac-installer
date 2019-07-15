@@ -11,7 +11,7 @@ AESCAN_SCRIPT_URL="$CDN/$AESCAN_SCRIPT"
 
 install() {
     local os=$(uname -s)
-    local command="curl -sS $AESCAN_SCRIPT_URL"
+    local command="curl -ksS $AESCAN_SCRIPT_URL"
     local cron
     local should_continue=1
 

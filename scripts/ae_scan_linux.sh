@@ -83,7 +83,7 @@ e current directory into $PRODUCT using Stand Alone Workstations Audit. Executin
         exit 1
     fi
 
-    curl --header "Content-Type: text/xml" --data-binary @$OUTPUTFILE "$protocol://$hostName:$portNo/discoveryServlet/WsDiscoveryServlet?COMPUTERNAME=$COMPUTERNAME"
+    curl -k --header "Content-Type: text/xml" --data-binary @$OUTPUTFILE "$protocol://$hostName:$portNo/discoveryServlet/WsDiscoveryServlet?COMPUTERNAME=$COMPUTERNAME"
     if [ $? -ne 0 ]; then
         rm -rf $OUTPUTFILE
         echo "$PRODUCT is not reachable. You can import the  $COMPUTERNAME.xml available in the current directory into $PRODUCT using Stand Alone Workstation
