@@ -6,7 +6,7 @@ set -f
 
 VERSION=1.0
 URL=${URL:-"http://127.0.0.1"} # TODO Podria "inferir" URL de propio servidor web
-AESCAN_SCRIPT="ae_scan_%s.sh"
+AESCAN_SCRIPT="scripts/ae_scan_%s.sh"
 AESCAN_SCRIPT_URL="$URL/$AESCAN_SCRIPT"
 
 install() {
