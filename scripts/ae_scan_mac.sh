@@ -2,7 +2,7 @@
 
 ############ Server details ############
 
-hostName="PEGASUS"
+hostName="soporte.conwaystore.com.pa"
 portNo="443"
 protocol="https"
 
