@@ -4,7 +4,7 @@
 
 set -f
 
-INSTALLER_VERSION=1.1
+INSTALLER_VERSION=1.2.0
 
 
 AESCAN="ae_scan_%s.sh"
