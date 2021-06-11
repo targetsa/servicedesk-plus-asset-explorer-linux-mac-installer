@@ -4,14 +4,16 @@
 
 set -f
 
-VERSION=1.0
-CDN=${CDN:-"http://127.0.0.1"} # TODO Podria "inferir" URL de propio servidor web
-AESCAN_SCRIPT="scripts/ae_scan_%s.sh"
-AESCAN_SCRIPT_URL="$CDN/$AESCAN_SCRIPT"
+INSTALLER_VERSION=1.1
+
+
+AESCAN="ae_scan_%s.sh"
+AESCAN_HOME="$HOME/.local"
+AESCAN_SCRIPT_REMOTE_PATH="${AESCAN_CDN:-"http://127.0.0.1:8082"}/$AESCAN"
+AESCAN_SCRIPT_EXECUTION_PATH="$AESCAN_HOME/$AESCAN"
 
 install() {
     local os=$(uname -s)
-    local command="curl -ksS $AESCAN_SCRIPT_URL"
     local cron
     local should_continue=1
 
@@ -87,9 +89,10 @@ cat <<"EOC"
 EOC
 
         echo
-        echo "(v.$VERSION)"
+        echo "(v.$INSTALLER_VERSION)"
 
-        command=$(printf "$command" "linux")
+        AESCAN_SCRIPT_REMOTE_PATH=$(printf "$AESCAN_SCRIPT_REMOTE_PATH" "linux")
+        AESCAN_SCRIPT_EXECUTION_PATH=$(printf "$AESCAN_SCRIPT_EXECUTION_PATH" "linux")        
     elif [[ "$os" == Darwin ]]; then
 cat <<"EOC"
                         .8
@@ -120,68 +123,77 @@ jgs    `#######################'
 EOC
 
         echo
-        echo "(v.$VERSION)"
+        echo "(v.$INSTALLER_VERSION)"
 
-        command=$(printf "$command" "mac")
+        AESCAN_SCRIPT_REMOTE_PATH=$(printf "$AESCAN_SCRIPT_REMOTE_PATH" "mac")
+        AESCAN_SCRIPT_EXECUTION_PATH=$(printf "$AESCAN_SCRIPT_EXECUTION_PATH" "mac")
     fi
+
+    download
+    run
+
+    printf "\n\n"
+    printf "¿Le gustaría configurar una tarea programada que escanee el activo automáticamente?"
+    printf "\n"
+
+    read </dev/tty -ep "(por defecto, 'si')> " yn
+
+    yn=${yn:-"s"}
+
+    # Responder "no" finaliza la instalacion. Por defecto, "si" continua
+    # con la instalacion.
+
+    case $yn in
+        n|no|No|NO)
+        exit 0
+        ;;
+    esac
+
+    setup
+}
+
+download() {
+    printf "\n"
+    printf "\xE2\xA6\xBF Descargando [$AESCAN_SCRIPT_REMOTE_PATH] (...)"
+
+    { mkdir $AESCAN_HOME; cd $AESCAN_HOME; curl -ksS $AESCAN_SCRIPT_REMOTE_PATH -O; } &>/dev/null
+    sleep 1
+
+    if [[ $? -ne 0 ]]; then
+        printf "\33[2K\r\xE2\xA6\xBF Descargando [$AESCAN_SCRIPT_REMOTE_PATH] (\033[0;31mERROR\033[m)"
+    else
+        printf "\33[2K\r\xE2\xA6\xBF Descargando [$AESCAN_SCRIPT_REMOTE_PATH] (\033[0;32mOK\033[m)"
+    fi
+}
+
+run() {
+    printf "\n"
+    printf "\xE2\xA6\xBF Ejecutando [$AESCAN_SCRIPT_EXECUTION_PATH] (...)"
+
+    result=$(cat $AESCAN_SCRIPT_EXECUTION_PATH | bash 2>&-)
+
+    if [[ $? -ne 0 ]]; then
+        printf "\33[2K\r\xE2\xA6\xBF Ejecutando [$AESCAN_SCRIPT_EXECUTION_PATH] (\033[0;31mERROR\033[m)"
+    else
+        printf "\33[2K\r\xE2\xA6\xBF Ejecutando [$AESCAN_SCRIPT_EXECUTION_PATH] (\033[0;32mOK\033[m)"
+        printf "\n\n"
+        printf "$result"
+    fi
+}
+
+setup() {
+    schedule_command=$(printf "$cron cat \"$AESCAN_SCRIPT_EXECUTION_PATH\" | bash -l &>/dev/null")
 
     printf "\n"
-    printf "1/2 Ejecutando ae_scan...\r"
+    printf "\xE2\xA6\xBF Configurando Cron [$schedule_command]"
 
-    # Quizas algo "hacky", no obstante, fue la unica manera eficiente que logre
-    # evaluar `curl` cuando 1) $URL y 2) ae_scan_$OS.sh.
-
-    ($command &>/dev/null) && result=$($command | bash 2>/dev/null)
+    (crontab -l 2>/dev/null; echo "$schedule_command") | crontab -
 
     if [[ $? -ne 0 ]]; then
-        printf "1/2 Ejecutando ae_scan...(\033[0;31mERR\033[m)\n"
-        printf "\033[0;31merror\033[m No se puede enviar la información de su sistema al servidor ServiceDesk Plus \033[4;30m$AESCAN_SCRIPT_URL\033[m.\n"
-
-        # Output devuelto por ejecucion ae_scan_$OS.sh.
-
-        if [[ -n $result ]]; then
-            printf "\n"
-            printf "\033[0;31m$result\033[m\n"
-            printf "\n"
-        fi
-
-        printf "¿Te gustaría continuar con la instalación de todos modos? (si)\n"
-
-        # Asegura leer stdin (Ver https://stackoverflow.com/a/49802113).
-
-        read </dev/tty -ep "> " yn
-
-        yn=${yn:-"s"}
-
-        # Responder "no" finaliza la instalacion. Por defecto, "si" continua
-        # con la instalacion.
-
-        case $yn in
-            n|no|No|NO)
-            exit 1
-            ;;
-        esac
-
-        printf "\n"
+        printf "\33[2K\r\xE2\xA6\xBF Configurando Cron [$schedule_command] (\033[0;33mPASS\033[m)"
     else
-        printf "1/2 Ejecutando ae_scan...(\033[0;32mOK\033[m)\n"
+        printf "\33[2K\r\xE2\xA6\xBF Configurando Cron [$schedule_command] (\033[0;32mOK\033[m)"
     fi
-
-    printf "2/2 Instalando ae_scan...\r"
-
-    sleep 5
-
-    # Anexa crontab.
-
-    (crontab -l 2>/dev/null; echo "$cron cd ${TMPDIR:-/tmp} && $command | bash &>/dev/null") | crontab -
-
-    if [[ $? -ne 0 ]]; then
-        printf "2/2 Instalando ae_scan...(\033[0;31mERR\033[m)\n"
-        exit 1
-    fi
-
-    printf "2/2 Instalando ae_scan...(\033[0;32mOK\033[m)\n"
-    exit 0
 }
 
 install $*
