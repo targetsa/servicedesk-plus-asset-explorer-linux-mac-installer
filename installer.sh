@@ -187,7 +187,7 @@ setup() {
     schedule_command=$(printf "$cron cat \"$AESCAN_SCRIPT_EXECUTION_PATH\" | bash -l &>/dev/null")
 
     printf "\n"
-    printf "\xE2\xA6\xBF Configurando Cron [$schedule_command]"
+    printf "\xE2\xA6\xBF Configurando Cron [$schedule_command] (...)"
 
     (crontab -l 2>/dev/null; echo "$schedule_command") | crontab -
 
