@@ -64,7 +64,7 @@ install() {
         shift
     done
 
-    cron="${MINUTES:-"*"} ${HOUR:-"0,6,12,18"} ${DAY:-"*"} ${MONTH:-"*"} ${DAY_OF_WEEK:-"*"}"
+    cron="${MINUTES:-"0"} ${HOUR:-"0,6,12,18"} ${DAY:-"*"} ${MONTH:-"*"} ${DAY_OF_WEEK:-"*"}"
 
     if [[ "$os" == Linux ]]; then
 cat <<"EOC"
