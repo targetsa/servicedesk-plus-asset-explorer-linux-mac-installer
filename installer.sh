@@ -150,6 +150,8 @@ EOC
     esac
 
     setup
+
+    printf "\n"
 }
 
 download() {
