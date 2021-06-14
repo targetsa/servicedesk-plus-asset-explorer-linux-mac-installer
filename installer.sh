@@ -64,7 +64,7 @@ install() {
         shift
     done
 
-    cron="${MINUTES:-"*"} ${HOUR:-"0,6,12,18"} ${DAY:-"*"} ${MONTH:-"*"} ${DAY_OF_WEEK:-"*"}"
+    cron="${MINUTES:-"0"} ${HOUR:-"0,6,12,18"} ${DAY:-"*"} ${MONTH:-"*"} ${DAY_OF_WEEK:-"*"}"
 
     if [[ "$os" == Linux ]]; then
 cat <<"EOC"
@@ -150,6 +150,8 @@ EOC
     esac
 
     setup
+
+    printf "\n"
 }
 
 download() {
@@ -185,7 +187,7 @@ setup() {
     schedule_command=$(printf "$cron cat \"$AESCAN_SCRIPT_EXECUTION_PATH\" | bash -l &>/dev/null")
 
     printf "\n"
-    printf "\xE2\xA6\xBF Configurando Cron [$schedule_command]"
+    printf "\xE2\xA6\xBF Configurando Cron [$schedule_command] (...)"
 
     (crontab -l 2>/dev/null; echo "$schedule_command") | crontab -
 
