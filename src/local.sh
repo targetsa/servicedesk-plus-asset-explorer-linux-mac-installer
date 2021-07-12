@@ -9,7 +9,7 @@ INSTALLER_VERSION=1.2.0
 
 AESCAN="ae_scan_%s.sh"
 AESCAN_HOME="$HOME/.local"
-AESCAN_SCRIPT_REMOTE_PATH="${AESCAN_CDN:-"$PWD/platform"}/$AESCAN"
+AESCAN_SCRIPT_SERVER_PATH="${AESCAN_CDN:-"file://$PWD"}/platform/$AESCAN"
 AESCAN_SCRIPT_EXECUTION_PATH="$AESCAN_HOME/$AESCAN"
 
 install() {
@@ -91,7 +91,7 @@ EOC
         echo
         echo "(v.$INSTALLER_VERSION)"
 
-        AESCAN_SCRIPT_REMOTE_PATH=$(printf "$AESCAN_SCRIPT_REMOTE_PATH" "linux")
+        AESCAN_SCRIPT_SERVER_PATH=$(printf "$AESCAN_SCRIPT_SERVER_PATH" "linux")
         AESCAN_SCRIPT_EXECUTION_PATH=$(printf "$AESCAN_SCRIPT_EXECUTION_PATH" "linux")        
     elif [[ "$os" == Darwin ]]; then
 cat <<"EOC"
@@ -125,7 +125,7 @@ EOC
         echo
         echo "(v.$INSTALLER_VERSION)"
 
-        AESCAN_SCRIPT_REMOTE_PATH=$(printf "$AESCAN_SCRIPT_REMOTE_PATH" "mac")
+        AESCAN_SCRIPT_SERVER_PATH=$(printf "$AESCAN_SCRIPT_SERVER_PATH" "mac")
         AESCAN_SCRIPT_EXECUTION_PATH=$(printf "$AESCAN_SCRIPT_EXECUTION_PATH" "mac")
     fi
 
@@ -156,15 +156,15 @@ EOC
 
 download() {
     printf "\n"
-    printf "\xE2\xA6\xBF Descargando [$AESCAN_SCRIPT_REMOTE_PATH] (...)"
+    printf "\xE2\xA6\xBF Descargando [$AESCAN_SCRIPT_SERVER_PATH] (...)"
 
-    { mkdir $AESCAN_HOME; cd $AESCAN_HOME; curl -ksS $AESCAN_SCRIPT_REMOTE_PATH -O; } &>/dev/null
+    { mkdir $AESCAN_HOME; cd $AESCAN_HOME; curl -ksS $AESCAN_SCRIPT_SERVER_PATH -O; } &>/dev/null
     sleep 1
 
     if [[ $? -ne 0 ]]; then
-        printf "\33[2K\r\xE2\xA6\xBF Descargando [$AESCAN_SCRIPT_REMOTE_PATH] (\033[0;31mERROR\033[m)"
+        printf "\33[2K\r\xE2\xA6\xBF Descargando [$AESCAN_SCRIPT_SERVER_PATH] (\033[0;31mERROR\033[m)"
     else
-        printf "\33[2K\r\xE2\xA6\xBF Descargando [$AESCAN_SCRIPT_REMOTE_PATH] (\033[0;32mOK\033[m)"
+        printf "\33[2K\r\xE2\xA6\xBF Descargando [$AESCAN_SCRIPT_SERVER_PATH] (\033[0;32mOK\033[m)"
     fi
 }
 
